@@ -12,6 +12,7 @@ import { createSmartAccountClient } from 'permissionless'
 import { createPublicClient, Hex, http, parseEther, zeroAddress } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { toSimpleSmartAccount } from 'permissionless/accounts'
+import { createPimlicoClient } from "permissionless/clients/pimlico"
 
 
 interface DeploymentCache {
@@ -247,15 +248,22 @@ async function depositToEntryPoint(
 
   const owner = privateKeyToAccount(accountOwner.privateKey as Hex)
 
-  const client = createPublicClient({
-    chain: sepolia,
-    transport: http(),
+  const publicClient = createPublicClient({
+    transport: http("https://rpc.ankr.com/eth_sepolia"),
+  })
+   
+  const paymasterClient = createPimlicoClient({
+    entryPoint: {
+      address: entryPoint06Address,
+      version: "0.6",
+    },
+    transport: http("https://api.pimlico.io/v2/sepolia/rpc?apikey=" + process.env.PIMLICO_API_KEY),
   })
 
   const viemSimpleAccount = await toSimpleSmartAccount({
-    client: client,
-    owner: owner,
-    address: simpleAccount.address as Hex,
+    client: publicClient,
+    address: simpleAccount.address as Hex, // use the address of the simple account we deployed
+    owner: privateKeyToAccount(accountOwner.privateKey as Hex),
     entryPoint: {
       address: entryPoint06Address,
       version: "0.6",
@@ -265,11 +273,15 @@ async function depositToEntryPoint(
   const smartAccountClient = createSmartAccountClient({
     account: viemSimpleAccount,
     chain: sepolia,
-    bundlerTransport: http("https://api.pimlico.io/v2/sepolia/rpc?apikey=" + process.env.PIMLICO_API_KEY)
+    paymaster: paymasterClient,
+    bundlerTransport: http("https://api.pimlico.io/v2/sepolia/rpc?apikey=API_KEY"),
+    userOperation: {
+      estimateFeesPerGas: async () => (await paymasterClient.getUserOperationGasPrice()).fast,
+    },
   })
 
+
   const txHash = await smartAccountClient.sendTransaction({
-    account: viemSimpleAccount,
     to: zeroAddress,
     value: parseEther("0.00001"),
   })
