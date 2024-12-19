@@ -132,6 +132,20 @@ async function logBalances(
   console.log(`Simple Account (${simpleAccount.address}): ${ethers.utils.formatEther(simpleAccountBalance)} ETH\n`)
 }
 
+// fund the account owner
+async function fundAccountOwner(
+  signer: Signer,
+  accountOwner: Wallet,
+  amount: BigNumber
+) {
+  console.log('\nFunding Account Owner...')
+  const fundOwnerTx = await signer.sendTransaction({
+    to: accountOwner.address,
+    value: amount
+  })
+  await fundOwnerTx.wait()
+}
+
 async function fundSimpleAccount(
   signer: Signer,
   simpleAccount: SimpleAccount,
@@ -189,13 +203,11 @@ async function depositToEntryPoint(
     })
   }
 
-
-  console.log('\nFunding Account Owner...')
-  const fundOwnerTx = await ethersSigner.sendTransaction({
-    to: accountOwner.address,
-    value: ethers.utils.parseEther("0.0005") 
-  })
-  await fundOwnerTx.wait()
+  await fundAccountOwner(
+    ethersSigner,
+    accountOwner,
+    ethers.utils.parseEther("0.0005")
+  )
 
   await fundSimpleAccount(
     ethersSigner, 
