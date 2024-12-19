@@ -43,7 +43,7 @@ function saveCache(cache: DeploymentCache) {
   }
 }
 
-// Contract deployment functions
+// if desired, deploy the entrypoint
 async function getOrDeployEntryPoint(signer: Signer): Promise<EntryPoint> {
   if (process.env.DEPLOY_ENTRYPOINT === "true") {
     console.log("Deploying EntryPoint v6")
@@ -53,6 +53,7 @@ async function getOrDeployEntryPoint(signer: Signer): Promise<EntryPoint> {
   return EntryPoint__factory.connect(entryPoint06Address, signer)
 }
 
+// if necessary (not in cache) deploy the simple account factory
 async function getOrDeploySimpleAccountFactory(
   signer: Signer,
   entryPointAddress: string,
@@ -76,6 +77,7 @@ async function getOrDeploySimpleAccountFactory(
   return factory
 }
 
+// if necessary (not in cache) create an account owner (creating a random one each time means we lose their funds)
 async function getOrCreateAccountOwner(
   provider: providers.Provider,
   cache: DeploymentCache | null
@@ -91,6 +93,7 @@ async function getOrCreateAccountOwner(
   return wallet;
 }
 
+// if necessary (not in cache) create a simple account
 async function getOrDeploySimpleAccount(
   signer: Signer,
   factory: SimpleAccountFactory,
@@ -111,7 +114,7 @@ async function getOrDeploySimpleAccount(
   return account;
 }
 
-// Add this after the other helper functions
+// log the balances of the signer, account owner, and simple account
 async function logBalances(
   provider: providers.Provider,
   ethersSigner: Signer,
@@ -129,7 +132,6 @@ async function logBalances(
   console.log(`Simple Account (${simpleAccount.address}): ${ethers.utils.formatEther(simpleAccountBalance)} ETH\n`)
 }
 
-// Add this new helper function
 async function fundSimpleAccount(
   signer: Signer,
   simpleAccount: SimpleAccount,
