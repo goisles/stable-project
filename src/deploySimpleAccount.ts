@@ -264,3 +264,90 @@ async function depositToEntryPoint(
   console.log(`UserOperation hash: ${txHash}`)
 
 })()
+
+// Account Balances:
+// Signer (0xD06A2Db5Ed0C51c2eCCcc9f200C5b08E83218F56): 0.000507901282741307 ETH
+// Account Owner (0x53249d0d48cA51E6924BbA648335cD1757618d2e): 0.0005 ETH
+// Simple Account (0x2e50C3B85d867b765C30d9A8C71a59e475A1c5D7): 0.0029 ETH
+
+// /Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/utils/errors/getUserOperationError.ts:68
+//   return new UserOperationExecutionError(cause, {
+//          ^
+// UserOperationExecutionError: The `validateUserOp` function on the Smart Account reverted.
+
+// Request Arguments:
+//   callData:              0xb61d27f60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009184e72a00000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000
+//   callGasLimit:          0
+//   initCode:              0x
+//   maxFeePerGas:          8.891133505 gwei
+//   maxPriorityFeePerGas:  0.035503358 gwei
+//   nonce:                 31998672606740085526295063035904
+//   paymasterAndData:      0x00000000000000fB866DaAA79352cC568a005D9600000000000000000000000000cd91f19f0f19ce862d7bec7b7d9b95457145afc6f639c28fd0360f488937bfa41e6eedcd3a46054fd95fcd0e3ef6b0bc0a615c4d975eef55c8a3517257904d5b1c
+//   preVerificationGas:    0
+//   sender:                0x2e50C3B85d867b765C30d9A8C71a59e475A1c5D7
+//   signature:             0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c
+//   verificationGasLimit:  0
+
+// Details: UserOperation reverted during simulation with reason: AA23 reverted (or OOG)
+// Version: viem@2.21.55
+//     at getUserOperationError (/Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/utils/errors/getUserOperationError.ts:68:10)
+//     at estimateUserOperationGas (/Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/actions/bundler/estimateUserOperationGas.ts:198:32)
+//     ... 4 lines matching cause stack trace ...
+//     at async /Users/samdevo/Desktop/stable-project/src/deploySimpleAccount.ts:285:18 {
+//   cause: SmartAccountFunctionRevertedError: The `validateUserOp` function on the Smart Account reverted.
+  
+//   Details: UserOperation reverted during simulation with reason: AA23 reverted (or OOG)
+//   Version: viem@2.21.55
+//       at getBundlerError (/Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/utils/errors/getBundlerError.ts:219:12)
+//       at /Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/utils/errors/getUserOperationError.ts:54:34
+//       at getUserOperationError (/Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/utils/errors/getUserOperationError.ts:67:5)
+//       at estimateUserOperationGas (/Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/actions/bundler/estimateUserOperationGas.ts:198:32)
+//       at processTicksAndRejections (node:internal/process/task_queues:105:5)
+//       at async prepareUserOperation (/Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/actions/bundler/prepareUserOperation.ts:579:19)
+//       at async sendUserOperation (/Users/samdevo/Desktop/stable-project/node_modules/viem/account-abstraction/actions/bundler/sendUserOperation.ts:132:7)
+//       at async sendTransaction (/Users/samdevo/Desktop/stable-project/node_modules/permissionless/actions/smartAccount/sendTransaction.ts:98:22)
+//       at async /Users/samdevo/Desktop/stable-project/src/deploySimpleAccount.ts:285:18 {
+//     details: 'UserOperation reverted during simulation with reason: AA23 reverted (or OOG)',
+//     docsPath: undefined,
+//     metaMessages: undefined,
+//     shortMessage: 'The `validateUserOp` function on the Smart Account reverted.',
+//     version: '2.21.55',
+//     [cause]: RpcRequestError: RPC Request failed.
+    
+//     URL: https://api.pimlico.io/v2/sepolia/rpc?apikey=pim_8HYvBEqXYmH852C1ZhfspL
+//     Request body: {"method":"eth_estimateUserOperationGas","params":[{"callData":"0xb61d27f60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009184e72a00000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000","callGasLimit":"0x0","initCode":"0x","maxFeePerGas":"0x211f3ee41","maxPriorityFeePerGas":"0x21dbcfe","nonce":"0x193e1499b940000000000000000","paymasterAndData":"0x00000000000000fB866DaAA79352cC568a005D9600000000000000000000000000cd91f19f0f19ce862d7bec7b7d9b95457145afc6f639c28fd0360f488937bfa41e6eedcd3a46054fd95fcd0e3ef6b0bc0a615c4d975eef55c8a3517257904d5b1c","preVerificationGas":"0x0","sender":"0x2e50C3B85d867b765C30d9A8C71a59e475A1c5D7","signature":"0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c","verificationGasLimit":"0x0"},"0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789"]}
+    
+//     Details: UserOperation reverted during simulation with reason: AA23 reverted (or OOG)
+//     Version: viem@2.21.55
+//         at request (/Users/samdevo/Desktop/stable-project/node_modules/viem/clients/transports/http.ts:132:19)
+//         at processTicksAndRejections (node:internal/process/task_queues:105:5)
+//         at async delay.count.count (/Users/samdevo/Desktop/stable-project/node_modules/viem/utils/buildRequest.ts:118:22)
+//         at async attemptRetry (/Users/samdevo/Desktop/stable-project/node_modules/viem/utils/promise/withRetry.ts:44:22) {
+//       details: 'UserOperation reverted during simulation with reason: AA23 reverted (or OOG)',
+//       docsPath: undefined,
+//       metaMessages: [Array],
+//       shortMessage: 'RPC Request failed.',
+//       version: '2.21.55',
+//       code: -32521,
+//       [cause]: [Object]
+//     }
+//   },
+//   details: 'UserOperation reverted during simulation with reason: AA23 reverted (or OOG)',
+//   docsPath: undefined,
+//   metaMessages: [
+//     'Request Arguments:',
+//     '  callData:              0xb61d27f60000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000009184e72a00000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\n' +
+//       '  callGasLimit:          0\n' +
+//       '  initCode:              0x\n' +
+//       '  maxFeePerGas:          8.891133505 gwei\n' +
+//       '  maxPriorityFeePerGas:  0.035503358 gwei\n' +
+//       '  nonce:                 31998672606740085526295063035904\n' +
+//       '  paymasterAndData:      0x00000000000000fB866DaAA79352cC568a005D9600000000000000000000000000cd91f19f0f19ce862d7bec7b7d9b95457145afc6f639c28fd0360f488937bfa41e6eedcd3a46054fd95fcd0e3ef6b0bc0a615c4d975eef55c8a3517257904d5b1c\n' +
+//       '  preVerificationGas:    0\n' +
+//       '  sender:                0x2e50C3B85d867b765C30d9A8C71a59e475A1c5D7\n' +
+//       '  signature:             0xfffffffffffffffffffffffffffffff0000000000000000000000000000000007aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa1c\n' +
+//       '  verificationGasLimit:  0'
+//   ],
+//   shortMessage: 'The `validateUserOp` function on the Smart Account reverted.',
+//   version: '2.21.55'
+// }
