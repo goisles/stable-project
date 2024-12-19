@@ -200,35 +200,12 @@ async function depositToEntryPoint(
     })
   }
 
-  // const bundler = new HttpRpcClient(
-  //   "https://api.pimlico.io/v2/11155111/rpc?apikey=" + process.env.PIMLICO_API_KEY,
-  //   entryPoint06Address,
-  //   sepolia.id
-  // )
-
-  // const accountAPI = new SimpleAccountAPI({
-  //   provider,
-  //   entryPointAddress: entryPoint06Address,
-  //   owner: accountOwner,
-  //   factoryAddress: simpleAccountFactory.address,
-  //   overheads: {
-  //     fixed: 200000,          // Increased overhead
-  //     perUserOp: 50000,       // Added per operation overhead
-  //     perUserOpWord: 100,     // Added per word overhead
-  //     zeroByte: 4,            // Gas per zero byte
-  //     nonZeroByte: 16,       
-  //     bundleSize: 1,       
-  //     sigSize: 65           
-  //   }
-  // })
-
-  // await accountAPI.init()
 
   // // Add this before creating the UserOp
   // console.log('\nFunding Account Owner...')
   // const fundOwnerTx = await ethersSigner.sendTransaction({
   //   to: accountOwner.address,
-  //   value: ethers.utils.parseEther("0.0005") // Send 0.01 ETH to Account Owner
+  //   value: ethers.utils.parseEther("0.0005") 
   // })
   // await fundOwnerTx.wait()
 
@@ -241,12 +218,10 @@ async function depositToEntryPoint(
   // await depositToEntryPoint(
   //   ethersSigner,
   //   simpleAccount,
-  //   ethers.utils.parseEther("0.001") // Deposit half of the funded amount
+  //   ethers.utils.parseEther("0.001") 
   // )
 
   await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
-
-  // const owner = privateKeyToAccount(accountOwner.privateKey as Hex)
 
   const publicClient = createPublicClient({
     transport: http(`https://sepolia.infura.io/v3/${process.env.INFURA_ID}`),
@@ -287,5 +262,5 @@ async function depositToEntryPoint(
     value: parseEther("0.00001"),
   })
   console.log(`UserOperation hash: ${txHash}`)
-  
+
 })()
