@@ -17,12 +17,6 @@ interface DeploymentCache {
   simpleAccountFactoryAddress: string;
 }
 
-interface UserOpEstimate {
-  callGasLimit: bigint;
-  verificationGas: bigint;
-  preVerificationGas: bigint;
-}
-
 const CACHE_FILE = path.join(__dirname, '../.deployment-cache.json');
 
 // Cache management functions
@@ -114,7 +108,6 @@ async function getOrDeploySimpleAccount(
   return account;
 }
 
-// Add this after the other helper functions
 async function logBalances(
   provider: providers.Provider,
   ethersSigner: Signer,
@@ -211,6 +204,7 @@ async function depositToEntryPoint(
     sepolia.id
   )
 
+  // adding extra overhead because I was getting errors with the defaults
   const accountAPI = new SimpleAccountAPI({
     provider,
     entryPointAddress: entryPoint06Address,
