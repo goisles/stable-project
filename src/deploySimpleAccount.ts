@@ -6,13 +6,10 @@ import { ethers } from 'hardhat'
 import { ERC4337EthersProvider, SimpleAccountAPI } from '@account-abstraction/sdk'
 import { HttpRpcClient } from '@account-abstraction/sdk/dist/src/HttpRpcClient'
 import { BigNumber, providers, Signer, Wallet } from 'ethers'
-import { createBundlerClient, entryPoint06Address } from "viem/account-abstraction"
+import { entryPoint06Address } from "viem/account-abstraction"
 import { sepolia } from "viem/chains"
 import { createSmartAccountClient } from 'permissionless'
-import { createPublicClient, Hex, http, parseEther, zeroAddress } from 'viem'
-import { privateKeyToAccount } from 'viem/accounts'
-import { toSimpleSmartAccount } from 'permissionless/accounts'
-
+import { zeroAddress } from 'viem'
 
 interface DeploymentCache {
   accountOwnerPrivateKey: string;
@@ -135,6 +132,19 @@ async function logBalances(
   console.log(`Simple Account (${simpleAccount.address}): ${ethers.utils.formatEther(simpleAccountBalance)} ETH\n`)
 }
 
+async function fundAccountOwner(
+  signer: Signer,
+  accountOwner: Wallet,
+  amount: BigNumber
+) {
+  console.log(`\nFunding Account Owner with ${ethers.utils.formatEther(amount)} ETH`)
+  const fundOwnerTx = await signer.sendTransaction({
+    to: accountOwner.address,
+    value: ethers.utils.parseEther("0.0005") // Send 0.01 ETH to Account Owner
+  })
+  await fundOwnerTx.wait()
+}
+
 // Add this new helper function
 async function fundSimpleAccount(
   signer: Signer,
@@ -199,116 +209,79 @@ async function depositToEntryPoint(
     })
   }
 
-  // const bundler = new HttpRpcClient(
-  //   "https://api.pimlico.io/v2/11155111/rpc?apikey=" + process.env.PIMLICO_API_KEY,
-  //   entryPoint06Address,
-  //   sepolia.id
+  const bundler = new HttpRpcClient(
+    "https://api.pimlico.io/v2/11155111/rpc?apikey=" + process.env.PIMLICO_API_KEY,
+    entryPoint06Address,
+    sepolia.id
+  )
+
+  const accountAPI = new SimpleAccountAPI({
+    provider,
+    entryPointAddress: entryPoint06Address,
+    owner: accountOwner,
+    factoryAddress: simpleAccountFactory.address,
+    overheads: {
+      fixed: 200000,          // Increased overhead
+      perUserOp: 50000,       // Added per operation overhead
+      perUserOpWord: 100,     // Added per word overhead
+      zeroByte: 4,            // Gas per zero byte
+      nonZeroByte: 16,       
+      bundleSize: 1,       
+      sigSize: 65           
+    }
+  })
+
+  await accountAPI.init()
+
+
+  // await fundAccountOwner(
+  //   ethersSigner,
+  //   accountOwner,
+  //   ethers.utils.parseEther("0.0005")
   // )
-
-  // const accountAPI = new SimpleAccountAPI({
-  //   provider,
-  //   entryPointAddress: entryPoint06Address,
-  //   owner: accountOwner,
-  //   factoryAddress: simpleAccountFactory.address,
-  //   overheads: {
-  //     fixed: 200000,          // Increased overhead
-  //     perUserOp: 50000,       // Added per operation overhead
-  //     perUserOpWord: 100,     // Added per word overhead
-  //     zeroByte: 4,            // Gas per zero byte
-  //     nonZeroByte: 16,       
-  //     bundleSize: 1,       
-  //     sigSize: 65           
-  //   }
-  // })
-
-  // await accountAPI.init()
-
-  // // Add this before creating the UserOp
-  // console.log('\nFunding Account Owner...')
-  // const fundOwnerTx = await ethersSigner.sendTransaction({
-  //   to: accountOwner.address,
-  //   value: ethers.utils.parseEther("0.0005") // Send 0.01 ETH to Account Owner
-  // })
-  // await fundOwnerTx.wait()
 
   // await fundSimpleAccount(
   //   ethersSigner, 
   //   simpleAccount, 
-  //   ethers.utils.parseEther("0.1")
+  //   ethers.utils.parseEther("0.0001")
   // )
 
   // await depositToEntryPoint(
   //   ethersSigner,
   //   simpleAccount,
-  //   ethers.utils.parseEther("0.001") // Deposit half of the funded amount
+  //   ethers.utils.parseEther("0.001")
   // )
 
   await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
 
-  const owner = privateKeyToAccount(accountOwner.privateKey as Hex)
-
-  const client = createPublicClient({
-    chain: sepolia,
-    transport: http(),
-  })
-
-  const viemSimpleAccount = await toSimpleSmartAccount({
-    client: client,
-    owner: owner,
-    address: simpleAccount.address as Hex,
-    entryPoint: {
-      address: entryPoint06Address,
-      version: "0.6",
+  const aaProvider = await new ERC4337EthersProvider(
+    sepolia.id,
+    {
+      entryPointAddress: entryPoint06Address,
+      bundlerUrl: "https://api.pimlico.io/v2/11155111/rpc?apikey=" + process.env.PIMLICO_API_KEY
     },
-  })
+    accountOwner,
+    provider,
+    bundler,
+    entryPoint,
+    accountAPI
+  ).init()
 
-  const smartAccountClient = createSmartAccountClient({
-    account: viemSimpleAccount,
-    chain: sepolia,
-    bundlerTransport: http("https://api.pimlico.io/v2/sepolia/rpc?apikey=" + process.env.PIMLICO_API_KEY)
-  })
+  const aaSigner = aaProvider.getSigner()
 
-  const txHash = await smartAccountClient.sendTransaction({
-    account: viemSimpleAccount,
+  const tx = {
     to: zeroAddress,
-    value: parseEther("0.00001"),
-  })
-  console.log(`UserOperation hash: ${txHash}`)
+    value: ethers.utils.parseEther("0.0001"),
+    data: "0x"
+  }
 
+  const txResponse = await aaSigner.sendTransaction(tx)
+  console.log(`UserOperation hash: ${txResponse.hash}`)
 
+  const receipt = await txResponse.wait()
+  console.log(`Transaction confirmed in block ${receipt.blockNumber}`)
 
-  // const aaProvider = await new ERC4337EthersProvider(
-  //   sepolia.id,
-  //   {
-  //     entryPointAddress: entryPoint06Address,
-  //     bundlerUrl: "https://api.pimlico.io/v2/11155111/rpc?apikey=" + process.env.PIMLICO_API_KEY
-  //   },
-  //   accountOwner,
-  //   provider,
-  //   bundler,
-  //   entryPoint,
-  //   accountAPI
-  // ).init()
-
-  // // Get the AA signer
-  // const aaSigner = aaProvider.getSigner()
-
-
-  // const tx = {
-  //   to: zeroAddress,
-  //   value: ethers.utils.parseEther("0.0001"),
-  //   data: "0x"
-  // }
-
-  // // This will properly wrap the transaction in a UserOperation
-  // const txResponse = await aaSigner.sendTransaction(tx)
-  // console.log(`UserOperation hash: ${txResponse.hash}`)
-
-  // // Wait for the transaction
-  // const receipt = await txResponse.wait()
-  // console.log(`Transaction confirmed in block ${receipt.blockNumber}`)
-
-  // // Log balances after transaction
-  // console.log('\nBalances after transaction:')
-  // await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
+  // Log balances after transaction
+  console.log('\nBalances after transaction:')
+  await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
 })()
