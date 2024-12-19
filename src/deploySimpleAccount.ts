@@ -182,10 +182,6 @@ async function depositToEntryPoint(
   console.log(`Deposit successful. Balance at EntryPoint: ${ethers.utils.formatEther(depositInfo.deposit)} ETH`)
 }
 
-// Add these constants at the top of the file
-   // Increased default
-
-// Main execution
 (async () => {
   dotenv.config()
   const provider = ethers.provider
@@ -234,23 +230,23 @@ async function depositToEntryPoint(
   await accountAPI.init()
 
 
-  // await fundAccountOwner(
-  //   ethersSigner,
-  //   accountOwner,
-  //   ethers.utils.parseEther("0.0005")
-  // )
+  await fundAccountOwner(
+    ethersSigner,
+    accountOwner,
+    ethers.utils.parseEther("0.0005")
+  )
 
-  // await fundSimpleAccount(
-  //   ethersSigner, 
-  //   simpleAccount, 
-  //   ethers.utils.parseEther("0.0001")
-  // )
+  await fundSimpleAccount(
+    ethersSigner, 
+    simpleAccount, 
+    ethers.utils.parseEther("0.0001")
+  )
 
-  // await depositToEntryPoint(
-  //   ethersSigner,
-  //   simpleAccount,
-  //   ethers.utils.parseEther("0.001")
-  // )
+  await depositToEntryPoint(
+    ethersSigner,
+    simpleAccount,
+    ethers.utils.parseEther("0.001")
+  )
 
   await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
 
@@ -285,3 +281,23 @@ async function depositToEntryPoint(
   console.log('\nBalances after transaction:')
   await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
 })()
+
+
+// output:
+
+// Account Balances:
+// Signer (0xD06A2Db5Ed0C51c2eCCcc9f200C5b08E83218F56): 0.000507901282741307 ETH
+// Account Owner (0x53249d0d48cA51E6924BbA648335cD1757618d2e): 0.0005 ETH
+// Simple Account (0x2e50C3B85d867b765C30d9A8C71a59e475A1c5D7): 0.0029 ETH
+
+// /Users/samdevo/Desktop/stable-project/node_modules/@ethersproject/logger/src.ts/index.ts:269
+//         const error: any = new Error(message);
+//                            ^
+// Error: processing response error (body="{\"jsonrpc\":\"2.0\",\"id\":43,\"error\":{\"message\":\"UserOperation reverted during simulation with reason: AA23 reverted (or OOG)\",\"code\":-32500}}", error={"code":-32500}, requestBody="{\"method\":\"eth_sendUserOperation\",\"params\":[{\"sender\":\"0x2e50C3B85d867b765C30d9A8C71a59e475A1c5D7\",\"nonce\":\"0x0\",\"initCode\":\"0x\",\"callData\":\"0xb61d27f6000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000005af3107a400000000000000000000000000000000000000000000000000000000000000000600000000000000000000000000000000000000000000000000000000000000000\",\"callGasLimit\":\"0x5208\",\"verificationGasLimit\":\"0x186a0\",\"maxFeePerGas\":\"0x2d7be052c\",\"maxPriorityFeePerGas\":\"0x59682f00\",\"paymasterAndData\":\"0x\",\"preVerificationGas\":\"0x3eb0d\",\"signature\":\"0xff604a33eae264d44c0157df1e38702beeba6b50d08ec96f91706ea8b7de1b143dcb74ad780aabaa040af54979f1d9bcbd3bc141e817d1ec8b1af085b0b575ba1b\"},\"0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789\"],\"id\":43,\"jsonrpc\":\"2.0\"}", requestMethod="POST", url="https://api.pimlico.io/v2/11155111/rpc?apikey=pim_8HYvBEqXYmH852C1ZhfspL", code=SERVER_ERROR, version=web/5.7.1)
+//     at Logger.makeError (/Users/samdevo/Desktop/stable-project/node_modules/@ethersproject/logger/src.ts/index.ts:269:28)
+//     at Logger.throwError (/Users/samdevo/Desktop/stable-project/node_modules/@ethersproject/logger/src.ts/index.ts:281:20)
+//     at /Users/samdevo/Desktop/stable-project/node_modules/@ethersproject/web/src.ts/index.ts:341:28
+//     at step (/Users/samdevo/Desktop/stable-project/node_modules/@ethersproject/web/lib/index.js:33:23)
+//     at Object.next (/Users/samdevo/Desktop/stable-project/node_modules/@ethersproject/web/lib/index.js:14:53)
+//     at fulfilled (/Users/samdevo/Desktop/stable-project/node_modules/@ethersproject/web/lib/index.js:5:58)
+//     at processTicksAndRejections (node:internal/process/task_queues:105:5)
