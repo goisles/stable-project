@@ -21,3 +21,5 @@ mnemonic.txt
 .cursorrules
 
 yarn.lock
+
+.deployment-cache.json
