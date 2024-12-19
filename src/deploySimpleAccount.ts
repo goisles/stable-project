@@ -246,10 +246,11 @@ async function depositToEntryPoint(
 
   await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
 
-  const owner = privateKeyToAccount(accountOwner.privateKey as Hex)
+  // const owner = privateKeyToAccount(accountOwner.privateKey as Hex)
 
   const publicClient = createPublicClient({
-    transport: http("https://rpc.ankr.com/eth_sepolia"),
+    transport: http(`https://sepolia.infura.io/v3/${process.env.INFURA_ID}`),
+    chain: sepolia,
   })
    
   const paymasterClient = createPimlicoClient({
@@ -274,7 +275,7 @@ async function depositToEntryPoint(
     account: viemSimpleAccount,
     chain: sepolia,
     paymaster: paymasterClient,
-    bundlerTransport: http("https://api.pimlico.io/v2/sepolia/rpc?apikey=API_KEY"),
+    bundlerTransport: http("https://api.pimlico.io/v2/sepolia/rpc?apikey=" + process.env.PIMLICO_API_KEY),
     userOperation: {
       estimateFeesPerGas: async () => (await paymasterClient.getUserOperationGasPrice()).fast,
     },
@@ -286,41 +287,5 @@ async function depositToEntryPoint(
     value: parseEther("0.00001"),
   })
   console.log(`UserOperation hash: ${txHash}`)
-
-
-
-  // const aaProvider = await new ERC4337EthersProvider(
-  //   sepolia.id,
-  //   {
-  //     entryPointAddress: entryPoint06Address,
-  //     bundlerUrl: "https://api.pimlico.io/v2/11155111/rpc?apikey=" + process.env.PIMLICO_API_KEY
-  //   },
-  //   accountOwner,
-  //   provider,
-  //   bundler,
-  //   entryPoint,
-  //   accountAPI
-  // ).init()
-
-  // // Get the AA signer
-  // const aaSigner = aaProvider.getSigner()
-
-
-  // const tx = {
-  //   to: zeroAddress,
-  //   value: ethers.utils.parseEther("0.0001"),
-  //   data: "0x"
-  // }
-
-  // // This will properly wrap the transaction in a UserOperation
-  // const txResponse = await aaSigner.sendTransaction(tx)
-  // console.log(`UserOperation hash: ${txResponse.hash}`)
-
-  // // Wait for the transaction
-  // const receipt = await txResponse.wait()
-  // console.log(`Transaction confirmed in block ${receipt.blockNumber}`)
-
-  // // Log balances after transaction
-  // console.log('\nBalances after transaction:')
-  // await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
+  
 })()
