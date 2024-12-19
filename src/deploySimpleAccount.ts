@@ -14,17 +14,10 @@ import { privateKeyToAccount } from 'viem/accounts'
 import { toSimpleSmartAccount } from 'permissionless/accounts'
 import { createPimlicoClient } from "permissionless/clients/pimlico"
 
-
 interface DeploymentCache {
   accountOwnerPrivateKey: string;
   simpleAccountAddress: string;
   simpleAccountFactoryAddress: string;
-}
-
-interface UserOpEstimate {
-  callGasLimit: bigint;
-  verificationGas: bigint;
-  preVerificationGas: bigint;
 }
 
 const CACHE_FILE = path.join(__dirname, '../.deployment-cache.json');
@@ -159,10 +152,8 @@ async function depositToEntryPoint(
 ) {
   console.log(`\nDepositing ${ethers.utils.formatEther(amount)} ETH to EntryPoint for SimpleAccount`)
   
-  // Get the EntryPoint interface
   const entryPoint = EntryPoint__factory.connect(entryPoint06Address, signer)
   
-  // Deposit for the SimpleAccount
   const depositTx = await entryPoint.depositTo(simpleAccount.address, {
     value: amount
   })
@@ -173,10 +164,6 @@ async function depositToEntryPoint(
   console.log(`Deposit successful. Balance at EntryPoint: ${ethers.utils.formatEther(depositInfo.deposit)} ETH`)
 }
 
-// Add these constants at the top of the file
-   // Increased default
-
-// Main execution
 (async () => {
   dotenv.config()
   const provider = ethers.provider
@@ -201,25 +188,24 @@ async function depositToEntryPoint(
   }
 
 
-  // // Add this before creating the UserOp
-  // console.log('\nFunding Account Owner...')
-  // const fundOwnerTx = await ethersSigner.sendTransaction({
-  //   to: accountOwner.address,
-  //   value: ethers.utils.parseEther("0.0005") 
-  // })
-  // await fundOwnerTx.wait()
+  console.log('\nFunding Account Owner...')
+  const fundOwnerTx = await ethersSigner.sendTransaction({
+    to: accountOwner.address,
+    value: ethers.utils.parseEther("0.0005") 
+  })
+  await fundOwnerTx.wait()
 
-  // await fundSimpleAccount(
-  //   ethersSigner, 
-  //   simpleAccount, 
-  //   ethers.utils.parseEther("0.1")
-  // )
+  await fundSimpleAccount(
+    ethersSigner, 
+    simpleAccount, 
+    ethers.utils.parseEther("0.1")
+  )
 
-  // await depositToEntryPoint(
-  //   ethersSigner,
-  //   simpleAccount,
-  //   ethers.utils.parseEther("0.001") 
-  // )
+  await depositToEntryPoint(
+    ethersSigner,
+    simpleAccount,
+    ethers.utils.parseEther("0.001") 
+  )
 
   await logBalances(provider, ethersSigner, accountOwner, simpleAccount)
 
@@ -256,7 +242,6 @@ async function depositToEntryPoint(
     },
   })
 
-
   const txHash = await smartAccountClient.sendTransaction({
     to: zeroAddress,
     value: parseEther("0.00001"),
@@ -264,7 +249,6 @@ async function depositToEntryPoint(
   console.log(`UserOperation hash: ${txHash}`)
 
 })()
-
 // Account Balances:
 // Signer (0xD06A2Db5Ed0C51c2eCCcc9f200C5b08E83218F56): 0.000507901282741307 ETH
 // Account Owner (0x53249d0d48cA51E6924BbA648335cD1757618d2e): 0.0005 ETH
@@ -351,3 +335,4 @@ async function depositToEntryPoint(
 //   shortMessage: 'The `validateUserOp` function on the Smart Account reverted.',
 //   version: '2.21.55'
 // }
+
