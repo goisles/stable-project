@@ -4,11 +4,11 @@
 
 1. main: 
 
-In this branch, I tried using using the 'permissionless' to send my UserOperation
+Here, I tried using using `permissionless` (used in Pimlico's example) to send my `UserOperation`
 
 2. deploy-simple-account: 
 
-In this branch, I used the @account-abstraction-sdk to send my UserOperation
+Here, I used the `@account-abstraction-sdk` package to send my `UserOperation`
 
 ## Status:
 
