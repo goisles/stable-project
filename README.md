@@ -1,4 +1,4 @@
-# Sam Stable Interview Project
+# Stable Interview Project
 
 ## Branches:
 
