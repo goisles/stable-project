@@ -1,6 +1,22 @@
-# Sam Stable Project
+# Sam Stable Interview Project
 
-Setup:
+## Branches:
+
+1. main: 
+
+In this branch, I tried using using the 'permissionless' to send my UserOperation
+
+2. deploy-simple-account: 
+
+In this branch, I used the @account-abstraction-sdk to send my UserOperation
+
+## Status:
+
+In both branches, my transaction is being reverted, and I am not sure why. I was very careful to ensure each account was properly funded, and I am using a very simple transaction that should go through. 
+
+My script is in src/deploySimpleAccount.ts. At the bottom of the file in each branch, look at the bottom of the file for the error message.
+
+## Setup:
 
 ```
 yarn install
