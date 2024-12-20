@@ -6,6 +6,16 @@ Setup:
 yarn install
 ```
 
+In the .env file:
+
+```
+MNEMONIC_FILE=<path to your mnemonic phrase file, such as mnemonic.txt>
+INFURA_ID=<your infura project id, if you are using infura. Otherwise, make changes to hardhat.config.ts>
+SIMPLE_ACCOUNT_FACTORY_ADDRESS=<optional, address of the simple account factory, if you wish to use a pre-deployed one>
+PIMLICO_API_KEY=<your pimlico api key>
+DEPLOY_ENTRYPOINT=<if you want to deploy the entrypoint and not use the pre-deployed one, set to true, otherwise set to false (default)>
+```
+
 Run the deploy and transact script:
 
 ```
